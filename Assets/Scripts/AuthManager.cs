@@ -119,7 +119,7 @@ public class AuthManager : MonoBehaviour
                 }
                 string username = newUser.DisplayName ?? "";
                 
-                CurrentUser = new User(newUser.UserId, username, newUser.Email, CurrentUser.Score);
+                CurrentUser = new User(newUser.UserId, username, newUser.Email);
                 //Debug.Log("User created successfully: " + CurrentUser.Username + " userId: " + CurrentUser.UserId + " userEmail: " + CurrentUser.Email);
                 //CurrentUser.Score = 0; // Set the initial score if needed
 
@@ -179,7 +179,7 @@ public class AuthManager : MonoBehaviour
             // Access additional user information (username) from the user profile
             string username = newUser.DisplayName ?? "";
             Debug.LogFormat("User signed in successfully: {0} ({1})", username, newUser.UserId);
-            CurrentUser = new User(newUser.UserId, username, newUser.Email, 0);
+            CurrentUser = new User(newUser.UserId, username, newUser.Email);
 
             // Load the home page scene or perform any other post-login actions
             UnityEngine.SceneManagement.SceneManager.LoadScene("HomePage");

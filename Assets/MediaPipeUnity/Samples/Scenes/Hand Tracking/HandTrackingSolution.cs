@@ -103,11 +103,11 @@ private void OnHandLandmarksOutput(object stream, OutputStream<List<NormalizedLa
     if (value != null && value.Count > 0 && value[0].Landmark.Count >= 21)
     {
         // Log the landmarks for debugging
-        for (int i = 0; i < value[0].Landmark.Count; i++)
-        {
-            var landmark = value[0].Landmark[i];
-            Debug.Log($"Landmark {i}: ({landmark.X}, {landmark.Y}, {landmark.Z})");
-        }
+        // for (int i = 0; i < value[0].Landmark.Count; i++)
+        // {
+        //     var landmark = value[0].Landmark[i];
+        //     Debug.Log($"Landmark {i}: ({landmark.X}, {landmark.Y}, {landmark.Z})");
+        // }
 
         // Thumb tip is at index 4
         Vector3 thumbTipPosition = new Vector3(value[0].Landmark[4].X, value[0].Landmark[4].Y, value[0].Landmark[4].Z);

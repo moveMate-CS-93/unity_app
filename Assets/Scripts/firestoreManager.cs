@@ -24,8 +24,7 @@ public class FirestoreManager
         {
             { "userId", user.UserId },
             { "username", user.Username },
-            { "email", user.Email },
-            { "score", user.Score }
+            { "email", user.Email }
             // Add more fields if needed
         };
 
