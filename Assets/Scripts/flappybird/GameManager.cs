@@ -18,6 +18,10 @@ public class GameManager : MonoBehaviour
     private User user;
     private Firebase.FirebaseApp app;
 
+    private string userID;
+
+    private string gameID;
+    private string gameInstanceId;
     private int score;
     public int Score => score;
 
@@ -107,6 +111,20 @@ public class GameManager : MonoBehaviour
         {
             backgroundMusic.StopMusic();
         }
+
+        if (user != null)
+        {
+            userID = user.UserId;
+        }
+        else
+        {
+            Debug.LogError("User object is null");
+        }
+                
+        gameID = "flappy_bird";
+        gameInstanceId = GenerateGameInstanceId();
+        SaveGameDataToFirestore(userID, gameID, gameInstanceId, score);
+
     }
 
     public void Pause()
