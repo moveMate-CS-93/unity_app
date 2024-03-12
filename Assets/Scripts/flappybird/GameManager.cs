@@ -1,34 +1,18 @@
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Firebase.Extensions;
-using Firebase.Firestore;
-using System.Collections.Generic;
-using System;
-
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
     [SerializeField] private Player player;
+    [SerializeField] private Text scoreText;
     [SerializeField] private GameObject playButton;
     [SerializeField] private GameObject getReadyImage; // Reference to the "Get Ready" image
     [SerializeField] private GameObject gameOverImage; // Reference to the "Game Over" image
     private BackgroundMusic backgroundMusic; 
 
-    [SerializeField] private TextMeshProUGUI scoreText;
-
-    private string gameId;
-    private string userID;
-    private string gameinstanceid;
-
-
-
-    private User user;
-    private Firebase.FirebaseApp app;
-
-    [SerializeField] private float score;
-    public float Score => score;
+    private int score;
+    public int Score => score;
 
     private void Awake()
     {
@@ -52,24 +36,7 @@ public class GameManager : MonoBehaviour
         // Show "Get Ready" image and play button when the game starts
         getReadyImage.SetActive(true);
         playButton.SetActive(true);
-        gameOverImage.SetActive(false);
-
-        Firebase.FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task => {
-        var dependencyStatus = task.Result;
-        if (dependencyStatus == Firebase.DependencyStatus.Available) {
-        // Create and hold a reference to your FirebaseApp,
-        // where app is a Firebase.FirebaseApp property of your application class.
-            app = Firebase.FirebaseApp.DefaultInstance;
-            Debug.Log("Firebase is ready to use!");
-
-        // Set a flag here to indicate whether Firebase is ready to use by your app.
-        } else {
-             UnityEngine.Debug.LogError(System.String.Format(
-             "Could not resolve all Firebase dependencies: {0}", dependencyStatus));
-            // Firebase Unity SDK is not safe to use here.
-        }
-    });
-
+         gameOverImage.SetActive(false);
     }
 
     public void Play()
@@ -117,13 +84,6 @@ public class GameManager : MonoBehaviour
         {
             backgroundMusic.StopMusic();
         }
-
-        userID = user.UserId;
-        gameId = "flappybird";
-        gameinstanceid = GenerateGameInstanceId();
-
-        SaveGameDataToFirestore(userID, gameId, gameinstanceid, score);
-
     }
 
     public void Pause()
@@ -136,45 +96,5 @@ public class GameManager : MonoBehaviour
     {
         score++;
         scoreText.text = score.ToString();
-    }
-
-    private string GenerateGameInstanceId()
-    {
-        long timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-        System.Random random = new System.Random();
-        int randomComponent = random.Next(10000);
-        string gameInstanceId = $"{timestamp}-{randomComponent}";
-        return gameInstanceId;
-    }
-
-    private void SaveGameDataToFirestore(string userId, string gameId, string gameInstanceId, float score)
-    {
-        FirebaseFirestore db = FirebaseFirestore.DefaultInstance;
-
-        DocumentReference gameHistoryRef = db.Collection("users").Document(userId)
-            .Collection("game_history").Document(gameId).Collection("game_instances").Document(gameInstanceId);
-
-        Dictionary<string, object> gameData = new Dictionary<string, object>
-        {
-            { "score", score },
-            { "completionTime", FieldValue.ServerTimestamp },
-            { "date", DateTime.UtcNow } // Store the current date
-        };
-
-        gameHistoryRef.SetAsync(gameData).ContinueWithOnMainThread(task =>
-        {
-            if (task.IsFaulted)
-            {
-                Debug.LogError("Failed to write game data to Firestore: " + task.Exception);
-            }
-            else if (task.IsCanceled)
-            {
-                Debug.LogError("Firestore write operation was cancelled");
-            }
-            else
-            {
-                Debug.Log("Game data successfully written to Firestore");
-            }
-        });
     }
 }
